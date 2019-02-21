@@ -7,14 +7,14 @@ library(plyr) #revalue function
 # Inicializacao -------------------------------------------------
 
 # determina pasta com os dados
-setwd("dados")
+setwd("data")
 # pega os nomes dos arquivos na pasta de trabalho com extensao .dbf
 files <- list.files("IPTU", pattern = ".csv")
 filesNames <- str_replace(files, ".csv", "")
+files <- paste("IPTU/", files, sep="")
 
 # Rotina para corrigir nomes e empilhar ----
-
-# le todos os arquivos dbfs
+# le todos os arquivos dbfs 
 df_list <- lapply(files, function(x){
     y <- paste("IPTU/", x, sep="")
     read.csv(y, as.is = T, sep = ";")})
@@ -167,23 +167,20 @@ df2 <- combined.df %>% mutate(tipo_const= factor(
                                   "Lote de fundos",
                                   "Normal",
                                   "Terreno interno",
-                                  "Terreno interno")))
-
-# cod_const eh a agregacao dos usos
-# AGREGAR POR TIPO PELA LEI 10.235/86
-df3 <- df2 %>% mutate(cod_const = factor(revalue(tipo_const, c(
-    "Residencial horizontal" = "Tipo 1",
-    "Residencial vertical" = "Tipo 2",
-    "Comercial horizontal" = "Tipo 3",
-    "Comercial vertical" = "Tipo 4",
-    "Barracão/Telheiro/Oficina" = "Tipo 5",
-    "Barracão/Telheiro/Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
-    "Indústria" = "Tipo 5",
-    "Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
-    "Templo/Clube/Ginásio ou Estádio esportivo/Museu/Hipódromo/Cinema/Teatro/Aeroporto/Estações/etc." = "Tipo 6",
-    "Edifício de garagens" = "Tipo 6"
-))))
+                                  "Terreno interno")),
+    cod_const = factor(revalue(tipo_const, c(
+        "Residencial horizontal" = "Tipo 1",
+        "Residencial vertical" = "Tipo 2",
+        "Comercial horizontal" = "Tipo 3",
+        "Comercial vertical" = "Tipo 4",
+        "Barracão/Telheiro/Oficina" = "Tipo 5",
+        "Barracão/Telheiro/Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
+        "Indústria" = "Tipo 5",
+        "Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
+        "Templo/Clube/Ginásio ou Estádio esportivo/Museu/Hipódromo/Cinema/Teatro/Aeroporto/Estações/etc." = "Tipo 6",
+        "Edifício de garagens" = "Tipo 6"
+    ))))
 
 # salva tabela completa em csv
-write.csv(df3, file = "Results/IPTU_2016_naoLocalizados.csv")
+write.csv(df2, file = "results/IPTU_2016_naoLocalizados.csv")
 

@@ -7,10 +7,11 @@ library(plyr) #revalue function
 # Inicializacao -------------------------------------------------
 
 # determina pasta com os dados
-setwd("IPTU")
+setwd("data")
 # pega os nomes dos arquivos na pasta de trabalho com extensao .dbf
-files <- list.files(getwd(), pattern = ".DBF")
+files <- list.files("IPTU", pattern = ".DBF")
 filesNames <- str_replace(files, ".DBF", "")
+files <- paste("IPTU/", files, sep = "")
 
 # Rotina para corrigir nomes e empilhar ----
 
@@ -52,7 +53,6 @@ combined.df <- do.call(rbind, dbfs3)
 # Rotina de categorização   -------------------------------------
 
 # a partir da coluna tipo_padr, separa tipo_const de padr_const
-
 df2 <- combined.df %>% mutate(tipo_const= factor(
     ifelse(is.na(str_sub(tipo_padr, 1, 
                          str_locate(tipo_padr, "-")[,1]-2)),
@@ -159,26 +159,23 @@ df2 <- combined.df %>% mutate(tipo_const= factor(
                           "Residência e outro uso (predominância residencial)", 
                           "Residência e outro uso (predominância residencial)", 
                           "Templo", 
-                          "Terreno")
-                      ))
-
-# cod_const eh a agregacao dos usos
-# AGREGAR POR TIPO PELA LEI 10.235/86
-df3 <- df2 %>% mutate(cod_const = factor(revalue(tipo_const, c(
-    "Residencial horizontal" = "Tipo 1",
-    "Residencial vertical" = "Tipo 2",
-    "Comercial horizontal" = "Tipo 3",
-    "Comercial vertical" = "Tipo 4",
-    "Barracão/Telheiro/Oficina" = "Tipo 5",
-    "Barracão/Telheiro/Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
-    "Indústria" = "Tipo 5",
-    "Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
-    "Templo/Clube/Ginásio ou Estádio esportivo/Museu/Hipódromo/Cinema/Teatro/Aeroporto/Estações/etc." = "Tipo 6",
-    "Edifício de garagens" = "Tipo 6"
-    )))) %>% filter(lat!=0)
+                          "Terreno")),
+    cod_const = factor(revalue(tipo_const, c(
+        "Residencial horizontal" = "Tipo 1",
+        "Residencial vertical" = "Tipo 2",
+        "Comercial horizontal" = "Tipo 3",
+        "Comercial vertical" = "Tipo 4",
+        "Barracão/Telheiro/Oficina" = "Tipo 5",
+        "Barracão/Telheiro/Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
+        "Indústria" = "Tipo 5",
+        "Oficina/Posto de serviço/Armazém/Depósito/Indústria" = "Tipo 5",
+        "Templo/Clube/Ginásio ou Estádio esportivo/Museu/Hipódromo/Cinema/Teatro/Aeroporto/Estações/etc." = "Tipo 6",
+        "Edifício de garagens" = "Tipo 6")))
+    ) %>% 
+    filter(lat!=0)
 
 # salva tabela completa em csv
-write.csv(df3, file = "../Results/IPTU_2016_completo.csv")
+write.csv(df2, file = "results/IPTU_2016_completo.csv")
 
 # Rotina para separar   ----
 
@@ -186,7 +183,7 @@ tipos <- list("Tipo 1", "Tipo 2", "Tipo 3", "Tipo 4",
            "Tipo 5", "Tipo 6", "Terreno")
 
 df_tipos <- lapply(tipos, function(x){
-    y <- df3 %>% filter(cod_const==x)
-    write.csv(y, file = paste("../Results/IPTU_2016_", x, ".csv", sep = ""))
+    y <- df2 %>% filter(cod_const==x)
+    write.csv(y, file = paste("results/IPTU_2016_", x, ".csv", sep = ""))
     return(y)})
 names(df_tipos) <- tipos
