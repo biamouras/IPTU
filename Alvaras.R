@@ -73,10 +73,11 @@ names(y[y>0])
 
 # Selecionando pontos   ----
 # alguns pontos estao com long lat = "-1.79769313486232e+308"
-df.off <- df %>% filter(long < -47)
+df.off <- df %>% filter(long < -47 | status == "T") %>% 
+    mutate(long=0, lat=0)
 
 # ptos ok
-df2 <- df %>% filter(long > -47) 
+df2 <- df %>% filter(long > -47 & status != "T") 
 
 # salvando arquivos
 write.csv(df.off, "../results/Alvaras_naoGeocod.csv")
