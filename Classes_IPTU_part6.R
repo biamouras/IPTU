@@ -11,7 +11,6 @@ setwd("data")
 # pega os nomes dos arquivos na pasta de trabalho com extensao .dbf
 files <- list.files("IPTU", pattern = ".csv")
 filesNames <- str_replace(files, ".csv", "")
-files <- paste("IPTU/", files, sep="")
 
 # Rotina para corrigir nomes e empilhar ----
 # le todos os arquivos dbfs 
@@ -23,7 +22,7 @@ names(df_list) <- filesNames
 df_list2 <- df_list
 df_list2$IPTU_NE_FINAL_com_part6 <- df_list$IPTU_NE_FINAL_com_part6[c(4,6:41, 44)]
 
-# removendo as colunas desnecessarias
+# renomeando as colunas 
 df_list2 <- lapply(df_list2, function(x){
     names(x) <- c("id", "long", "lat", "num_contr", 
                   "ano_exerc", "num_nl", "data_cadastro", 

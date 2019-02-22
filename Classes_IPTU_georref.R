@@ -11,13 +11,14 @@ setwd("data")
 # pega os nomes dos arquivos na pasta de trabalho com extensao .dbf
 files <- list.files("IPTU", pattern = ".DBF")
 filesNames <- str_replace(files, ".DBF", "")
-files <- paste("IPTU/", files, sep = "")
-
-# Rotina para corrigir nomes e empilhar ----
 
 # le todos os arquivos dbfs
-dbfs <- lapply(files, read.dbf, as.is=T)
+dbfs <- lapply(files, function(x){
+    y <- paste("IPTU/", x, sep="")
+    read.dbf(y, as.is = T)})
 names(dbfs) <- filesNames
+
+# Rotina para corrigir nomes e empilhar ----
 
 # algumas tabelas nao estavam com a mesma qtde de colunas
 # esta parte eh para corrigir isso
